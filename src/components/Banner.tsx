@@ -46,7 +46,7 @@ export default function Banner() {
 
       <button
           className="absolute bottom-6 right-166 bg-white text-black px-6 py-5 rounded-md font-semibold hover:bg-black hover:text-white z-[3]"
-          onClick={(e) => {e.stopPropagation(); router.push("/venue")}}
+          onClick={(e) => {e.stopPropagation(); router.push("/dentist")}}
         >
           Create Appointment
       </button>
