@@ -7,37 +7,41 @@ import Link from "next/link"
 export default async function TopMenu() {
   const session = await getServerSession(authOptions)
   return (
-    <div className="h-[50px] bg-white fixed top-0 inset-x-0 z-30 border-y border-gray-300 flex items-center justify-end pr-2 gap-8">
-
-      <div className='flex item-center justify-center absolute left-0 h-full px-5 underline gap-20'>
-      
-      {
-        session?
-        <Link href="/api/auth/signout">
-          <div className='text-cyan-600 text-mb absolute top-3'>
-            Sign-Out of {session.user?.name} 
-          </div>
-        </Link> :
-        <Link href="/api/auth/signin">
-          <div className='text-cyan-600 text-mb absolute top-3'> 
-            Sign-In
-          </div>
-        </Link>
-      }
-
-      <TopMenuItem title="My Booking" pageRef="/mybooking"/>
-
-      </div>
-
-      <TopMenuItem title="Booking" pageRef="/booking" />
+    <div className="h-[50px] w-full fixed top-0 bg-white flex px-5 border-y border-gray-300 gap-8">
 
       <Image
         src="/img/logo.png"
         alt="Logo"
         width={45}
         height={45}
-        className="object-contain"
+        className="object-contain rounded-lg"
       />
+      
+      <TopMenuItem title="Booking" pageRef="/booking" />
+      
+      <TopMenuItem title="View Appointment" pageRef="/viewappt"/>
+
+      <div className='h-full flex items-center justify-center absolute right-0 px-5'>
+      
+      {
+        session?
+        <div className='flex gap-6'>
+        <Link href="/api/auth/signout">
+          <div className='text-cyan-600 text-mb'>
+            Sign-Out
+          </div>
+        </Link>
+        <div className='text-black'>
+          User: {session.user?.name}
+        </div>
+        </div> :
+        <Link href="/api/auth/signin">
+          <div className='text-cyan-600 text-mb'> 
+            Sign-In
+          </div>
+        </Link>
+      }
+      </div>
 
     </div>
   )

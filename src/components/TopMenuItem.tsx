@@ -9,7 +9,7 @@ export default function TopMenuItem ({
 }) {
     return (
         <Link 
-            className="h-full flex items-center justify-center !text-gray-500 font-bold text-[14px] transition-colors !hover:text-black" 
+            className='h-full flex items-center justify-center !text-gray-500 font-bold text-[14px] !hover:text-black' 
             href={pageRef}
         >
             {title}
