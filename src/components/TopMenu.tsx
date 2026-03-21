@@ -9,6 +9,7 @@ export default async function TopMenu() {
   return (
     <div className="h-[50px] w-full fixed top-0 bg-white flex px-5 border-y border-gray-300 gap-8">
 
+      <Link href={`/`}>
       <Image
         src="/img/logo.png"
         alt="Logo"
@@ -16,6 +17,7 @@ export default async function TopMenu() {
         height={45}
         className="object-contain rounded-lg"
       />
+      </Link>
       
       <TopMenuItem title="Booking" pageRef="/booking" />
       

@@ -5,14 +5,14 @@ import { Suspense } from "react";
 import { LinearProgress } from "@mui/material";
 
 
-export default function Venue() {
+export default function Dentists() {
   const Dentists =  getDentists()
 
   return (
     <main>
       <Suspense fallback={ <p>Loading...<LinearProgress/></p>}>
         <DentistCatalog dentistsJson={Dentists}/>
-        </Suspense>
+      </Suspense>
         
     </main>
   );

@@ -27,6 +27,13 @@ export interface AppointmentItem {
   _id: string;
   apptDate: string; // Date จาก backend -> string (ISO)
   user: string;     // ObjectId (user id)
-  dentist: string;  // ObjectId (dentist id)
+  dentist: string | DentistItem;  // ObjectId (dentist id)
   createdAt?: string;
+}
+
+export interface AppointmentJson {
+  success: boolean
+  count: number
+  pagination?: any
+  data: AppointmentItem[]
 }
