@@ -39,16 +39,20 @@ export default function BookingContent({
 
   return (
     <main className="w-full flex flex-col items-center pt-10">
-      <h1 className="text-xl font-medium">Dentist Booking</h1>
+      <h1 className="text-5xl font-bold">Make an Appointment</h1>
 
       {/* Card หมอ */}
-      <div className="bg-gray-100 rounded-lg p-5 mt-4 w-80 shadow">
-        <h2 className="text-lg font-semibold">{dentist.name}</h2>
-        <p className="text-sm text-gray-600">Experience : {dentist.experience} year</p>
-        <p className="text-sm text-gray-600">Expertise : {dentist.expertise}</p>
+      <div className="bg-blue-100 rounded-lg p-5 mt-10 w-80 shadow border-2 border-blue-400" >
+        <h2 className="text-xl font-semibold">{dentist.name}</h2>
+        <p className="text-md text-gray-600">Experience : {dentist.experience} year</p>
+        <p className="text-md text-gray-600">Expertise : {dentist.expertise}</p>
       </div>
 
-      <div className="w-fit space-y-5 my-10 flex flex-col">
+      <div className="w-fit space-y-3 my-10 flex flex-col ">
+
+        <p>please select date</p>
+
+        <div className="w-full mb-4">
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
             className="bg-white w-full"
@@ -56,14 +60,15 @@ export default function BookingContent({
             onChange={(newValue) => setApptDate(newValue)}
           />
         </LocalizationProvider>
+      </div>
 
-        <Button
-          variant="contained"
-          className="bg-blue-500 hover:bg-blue-700 w-full mt-5"
-          onClick={handleApptVenue}
-        >
-          Book Dentist
-        </Button>
+      <Button
+        variant="contained"
+        className="bg-blue-500 hover:bg-blue-700 w-full"
+        onClick={handleApptVenue}
+      >
+        Book Dentist
+      </Button>
       </div>
     </main>
   );

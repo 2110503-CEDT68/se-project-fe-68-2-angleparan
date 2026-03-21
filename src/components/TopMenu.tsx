@@ -19,7 +19,7 @@ export default async function TopMenu() {
       />
       </Link>
       
-      <TopMenuItem title="Booking" pageRef="/booking" />
+      <TopMenuItem title="Booking" pageRef="/dentist" />
       
       <TopMenuItem title="View Appointment" pageRef="/viewappt"/>
 
