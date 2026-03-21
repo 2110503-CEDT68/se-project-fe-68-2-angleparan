@@ -25,7 +25,7 @@ export default async function DentistCatalog({
         
 
             <Link href={`/`}>
-            <button className="fixed top-20 left-10 bg-blue-600 hover:bg-blue-900 hover:shadow-xl text-white px-4 py-2 rounded">
+            <button className="fixed top-17 left-6 bg-blue-600 hover:bg-blue-900 hover:shadow-xl text-white px-4 py-2 rounded">
                 go back home
             </button>
             </Link>
