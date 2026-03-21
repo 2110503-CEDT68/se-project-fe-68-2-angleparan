@@ -32,7 +32,7 @@ export default async function TopMenu() {
           </div>
         </Link>
         <div className='text-black'>
-          User: {session.user?.name}
+          {session.user.role === 'admin'? 'Admin' : 'User' }: {session.user?.name}
         </div>
         </div> :
         <Link href="/api/auth/signin">

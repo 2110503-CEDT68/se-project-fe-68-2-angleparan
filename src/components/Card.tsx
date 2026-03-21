@@ -1,22 +1,20 @@
 "use client"
-import styles from "./card.module.css";
+
 import Image from "next/image";
 import InteractiveCard from "./InteractiveCard";
 import { useState } from "react"
 import Link from "next/link"
 
 export default function Card(
-  { DentistName, imgSrc,experience,expertist, onRate ,did}: 
-  { DentistName: string; imgSrc: string;experience:string ; expertist:string;
+  { DentistName,experience,expertist, onRate ,did}: 
+  { DentistName: string;experience:number ; expertist:string;
     onRate?:(value:number)=>void , did:string }
 ) {
    const [value,setValue] = useState<number | null>(0)
   return (
     <InteractiveCard >
        
-        <Image src={imgSrc} alt={DentistName} width={300} height={200}
-          className="w-full h-50 object-cover rounded-sm" />
-        <div className="p-2">
+        <div className="p-2 text-black">
           <h2 className="mb-2 text-xl">{DentistName}</h2>
           <div className="p-1">
           <h6>experience : {experience} year</h6>
@@ -28,7 +26,6 @@ export default function Card(
               book Dentist
           </button>
         </Link>
-
       
      </InteractiveCard>
   )

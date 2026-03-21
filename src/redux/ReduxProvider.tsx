@@ -13,9 +13,7 @@ export default function ReduxProvider({
     let reduxPersistor = persistStore(store)
     return (
         <ReactReduxProvider store={store}>
-            <PersistGate loading={null} persistor={reduxPersistor}>
             {children}
-            </PersistGate>
         </ReactReduxProvider>
     )
 }

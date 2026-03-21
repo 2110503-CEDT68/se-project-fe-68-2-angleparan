@@ -7,7 +7,7 @@ export default function InteractiveCard({ children }: { children: ReactNode }) {
 
   return (
     <div
-      className="w-xs h-100 p-3 m-10 rounded-lg transition 
+      className="h-[200px] p-3 m-5 rounded-lg transition 
       border border-transparent bg-gray-100 
       hover:border-black-300 hover:shadow-md"
       onMouseOver={() => setHover(true)}

@@ -11,7 +11,7 @@ export default function Venue() {
   return (
     <main>
       <Suspense fallback={ <p>Loading...<LinearProgress/></p>}>
-        <DentistCatalog DentistsJson={Dentists}/>
+        <DentistCatalog dentistsJson={Dentists}/>
         </Suspense>
         
     </main>

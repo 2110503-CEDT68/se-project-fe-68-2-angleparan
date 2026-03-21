@@ -23,7 +23,7 @@ export default function Banner() {
   }
 
   const { data:session } = useSession()
-  console.log(session?.user.token)
+  console.log(session?.user)
 
   return (
     <div className="relative w-full h-[50vh] overflow-hidden"

@@ -19,16 +19,12 @@ export const authOptions:AuthOptions = {
       // Add logic here to look up the user from the credentials supplied
       if (!credentials) return null
       
-      const user = await userLogIn(credentials.email, credentials.password)
+      const res = await userLogIn(credentials.email, credentials.password)
 
-      if (user) {
-        // Any object returned will be saved in `user` property of the JWT
-        return user
-      } else {
-        // If you return null then an error will be displayed advising the user to check their details.
-        return null
-
-        // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
+      if (!res || !res.user) return null 
+      return {
+        ...res.user,
+        accessToken: res.token
       }
     }
     })
@@ -36,10 +32,15 @@ export const authOptions:AuthOptions = {
     session: { strategy: "jwt"},
     callbacks: {
       async jwt({token, user}) {
-        return {...token,...user}
+        if (user) {
+          token.user = user        // เก็บ user
+          token.accessToken = user.accessToken // เก็บ token
+        }
+        return token
       },
       async session({session, token, user}) {
-        session.user = token as any
+        session.user = token.user as any
+        session.accessToken = token.accessToken as any
         return session
       },
     }
