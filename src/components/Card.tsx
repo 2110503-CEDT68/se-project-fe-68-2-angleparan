@@ -21,7 +21,7 @@ export default function Card(
           <h6>expertist : {expertist}</h6>
           </div>
         </div>
-      <Link href={`/booking`}>
+      <Link href={`/dentist/${did}`}>
           <button className="bg-blue-600 hover:bg-blue-900 hover:shadow-xl text-white px-4 py-2 rounded ml-auto block mt-4">
               book Dentist
           </button>
