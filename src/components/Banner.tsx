@@ -1,55 +1,49 @@
 "use client"
 
-import Image from "next/image";
 import { useRouter } from "next/navigation"
-import { useState } from "react";
 import { useSession } from "next-auth/react";
 
 export default function Banner() {
-
   const router = useRouter()
+  const { data: session } = useSession()
 
-  const images = [
-    "/img/cover.jpg",
-    "/img/cover2.jpg",
-    "/img/cover3.jpg",
-    "/img/cover4.jpg"
-  ]
-
-  const [index,setIndex] = useState(0)
-
-  function changeImage(){
-    setIndex((index+1)%images.length)
-  }
-
-  const { data:session } = useSession()
-  console.log(session?.user)
+  // กำหนด Path ของวิดีโอที่ต้องการใช้
+  const videoSrc = "/clinic.mp4" 
 
   return (
-    <div className="relative w-full h-[50vh] overflow-hidden"
-         onClick={changeImage}
-    >
-
-      <Image 
-        src={images[index]}
-        alt="cover" 
-        fill
-        className="object-cover" 
+    <div className="relative w-full h-[93.6vh] overflow-hidden bg-black">
+      
+      {/* วิดีโอพื้นหลัง */}
+      <video
+        src={videoSrc}
+        autoPlay
+        loop
+        muted
+        playsInline // ช่วยให้เล่นอัตโนมัติได้ดีขึ้นบน Browser มือถือ
+        className="absolute top-0 left-0 w-full h-full object-cover"
       />
 
-      {
-        session? 
-        <div className="z-30 absolute top-5 right-10 font-semibold text-black text-xl">
-          Welcome {session.user?.name}
-        </div> : <div>test</div>
-      }
+      {/* Overlay: เลเยอร์สีดำจางๆ ช่วยให้ข้อความและปุ่มเด่นขึ้น */}
+      <div className="absolute inset-0 bg-black/30 z-[1]" />
 
-      <button
-          className="absolute bottom-6 right-166 bg-white text-black px-6 py-5 rounded-md font-semibold hover:bg-black hover:text-white z-[3]"
-          onClick={(e) => {e.stopPropagation(); router.push("/dentist")}}
+      {/* ข้อมูล User */}
+      {session && (
+        <div className="z-10 absolute top-5 right-10 font-semibold text-white text-xl drop-shadow-lg">
+          Welcome {session.user?.name}
+        </div>
+      )}
+
+      {/* ส่วนของปุ่ม Action */}
+      <div className="relative z-10 flex flex-col items-center justify-center h-full">
+        <button
+          className="bg-white text-black px-8 py-4 rounded-md font-bold text-lg 
+                     hover:bg-black hover:text-white transition-all duration-300 
+                     shadow-xl transform hover:scale-105"
+          onClick={() => router.push("/dentist")}
         >
           Create Appointment
-      </button>
+        </button>
+      </div>
 
     </div>
   );
