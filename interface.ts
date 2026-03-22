@@ -3,7 +3,7 @@ export interface DentistItem {
   name: string;
   experience: number;
   expertise: string;
-  workingHours: {
+  workingHours?: {
     start: number; // เช่น 9
     end: number;   // เช่น 17
   };
