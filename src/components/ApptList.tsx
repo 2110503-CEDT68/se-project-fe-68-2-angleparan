@@ -65,30 +65,36 @@ export default function ApptList() {
         return (
           <div
             key={appt._id}
-            className="bg-slate-200 rounded px-5 mx-5 py-2 my-2 text-black"
+            className="relative h-auto bg-white rounded-lg px-5 mx-5 py-4 my-2 text-black"
           >
+            <button className="absolute top-3 right-3 p-1 text-gray-600 hover:text-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-pencil"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+            </button>
+
             <div className="text-md">
-              Dentist : {dentist?.name ?? "Unknown"}
+              <span className="font-semibold">Dentist :</span> {dentist?.name ?? "Unknown"}
             </div>
 
             <div className="text-md">
-              Experience : {dentist?.experience ?? "-"} years
+              <span className="font-semibold">Experience :</span> {dentist?.experience ?? "-"} years
             </div>
 
             <div className="text-md">
-              Expertise : {dentist?.expertise ?? "-"}
+              <span className="font-semibold">Expertise :</span> {dentist?.expertise ?? "-"}
             </div>
 
             <div className="text-md">
-              Appointment Date :{" "}
+              <span className="font-semibold">Appointment Date :</span>{" "}
               {new Date(appt.apptDate).toLocaleString()}
             </div>
 
+            <div className="absolute right-3 bottom-3">
             <button
-              className="block rounded-md bg-sky-600 hover:bg-red-600 px-3 py-1 text-white shadow-sm"
+              className="block rounded-md bg-red-700 hover:bg-red-800 px-3 py-1 text-white shadow-sm"
             >
               Cancel Booking
             </button>
+            </div>
           </div>
         )
       })}
