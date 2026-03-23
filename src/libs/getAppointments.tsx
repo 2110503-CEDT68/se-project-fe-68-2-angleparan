@@ -1,8 +1,8 @@
 import { AppointmentJson } from "../../interface"
 
-export default async function getAppointment(token: string): Promise<AppointmentJson> {
+export default async function getAppointment(token: string, query: string = ""): Promise<AppointmentJson> {
   const response = await fetch(
-    "https://be-project-69-demonparan.vercel.app/api/v1/appointments",
+    `https://be-project-69-demonparan.vercel.app/api/v1/appointments${query}`,
     {
       method: "GET",
       headers: {

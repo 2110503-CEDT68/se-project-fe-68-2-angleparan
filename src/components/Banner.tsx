@@ -36,7 +36,7 @@ export default function Banner() {
                      shadow-xl transform hover:scale-105"
           onClick={() => router.push("/dentist")}
         >
-          Create Appointment
+          Explore our Dentist →
         </button>
       </div>
 
