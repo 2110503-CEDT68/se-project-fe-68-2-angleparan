@@ -7,33 +7,28 @@ export default function Banner() {
   const router = useRouter()
   const { data: session } = useSession()
 
-  // กำหนด Path ของวิดีโอที่ต้องการใช้
   const videoSrc = "/clinic.mp4" 
 
   return (
     <div className="relative w-full h-[93.6vh] overflow-hidden bg-black">
       
-      {/* วิดีโอพื้นหลัง */}
       <video
         src={videoSrc}
         autoPlay
         loop
         muted
-        playsInline // ช่วยให้เล่นอัตโนมัติได้ดีขึ้นบน Browser มือถือ
+        playsInline 
         className="absolute top-0 left-0 w-full h-full object-cover"
       />
 
-      {/* Overlay: เลเยอร์สีดำจางๆ ช่วยให้ข้อความและปุ่มเด่นขึ้น */}
       <div className="absolute inset-0 bg-black/30 z-[1]" />
 
-      {/* ข้อมูล User */}
       {session && (
         <div className="z-10 absolute top-5 right-10 font-semibold text-white text-xl drop-shadow-lg">
           Welcome {session.user?.name}
         </div>
       )}
 
-      {/* ส่วนของปุ่ม Action */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full">
         <button
           className="bg-white text-black px-8 py-4 rounded-md font-bold text-lg 
@@ -41,7 +36,7 @@ export default function Banner() {
                      shadow-xl transform hover:scale-105"
           onClick={() => router.push("/dentist")}
         >
-          Create Appointment
+          Explore our Dentist →
         </button>
       </div>
 

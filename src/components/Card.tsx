@@ -2,11 +2,22 @@
 
 import InteractiveCard from "./InteractiveCard";
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 
 export default function Card(
   { DentistName, experience, expertist, did, workingHours }: 
   { DentistName: string; experience: number; expertist: string; did: string; workingHours?: { start: number; end: number }; }
 ) {
+  const searchParams = useSearchParams();
+  const mode = searchParams.get("mode");
+  const editApptId = searchParams.get("apptid");
+
+  const targetUrl = mode === "edit" && editApptId
+    ? `/viewappt/${editApptId}?newDid=${did}`
+    : `/dentist/${did}/appointments`;
+
+  const buttonText = mode === "edit" ? "Select for Update" : "Book Dentist";
+
   return (
     <InteractiveCard>
       <div className="flex flex-col h-full justify-between p-4">
@@ -31,9 +42,12 @@ export default function Card(
           </div>
         </div>
 
-        <Link href={`/dentist/${did}/appointments`} className="mt-6 w-full">
-          <button className="w-full bg-blue-50 text-blue-600 border border-blue-600 font-semibold hover:bg-blue-600 hover:text-white px-4 py-2 rounded-lg transition-all duration-300">
-            Book Dentist
+        <Link href={targetUrl} className="mt-6 w-full">
+          <button className={`w-full font-semibold px-4 py-2 rounded-lg transition-all duration-300 border 
+            ${mode === "edit" 
+              ? "bg-amber-50 text-amber-600 border-amber-600 hover:bg-amber-600 hover:text-white" 
+              : "bg-blue-50 text-blue-600 border-blue-600 hover:bg-blue-600 hover:text-white"}`}>
+            {buttonText}
           </button>
         </Link>
         
