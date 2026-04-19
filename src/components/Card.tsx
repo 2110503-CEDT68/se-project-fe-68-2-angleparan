@@ -37,7 +37,6 @@ const targetUrl = mode === "edit" && editApptId
     <InteractiveCard>
       <Link href={targetUrl} className="block flex flex-col h-full justify-between p-4 group">
         <div>
-          {/* Avatar + name */}
           <div className="flex items-center gap-3 mb-3">
             <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl font-bold shrink-0">
               {DentistName.charAt(0)}
@@ -47,7 +46,6 @@ const targetUrl = mode === "edit" && editApptId
             </h2>
           </div>
 
-          {/* Rating — แสดงเฉพาะเมื่อมี review */}
           
           {averageRating !== undefined && ratingCount !== undefined && ratingCount > 0 ? (
             <div className="flex items-center gap-1.5 mb-3">

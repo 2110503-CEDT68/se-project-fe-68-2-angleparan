@@ -1,6 +1,6 @@
 import { RatingJson } from "../../interface";
 
-const BASE_URL = "http://localhost:5000/api/v1";
+const BASE_URL = "https://be-project-69-demonparan.vercel.app/api/v1";
 
 export default async function getRatings(dentistId: string): Promise<RatingJson> {
   const response = await fetch(`${BASE_URL}/dentists/${dentistId}/ratings`, {

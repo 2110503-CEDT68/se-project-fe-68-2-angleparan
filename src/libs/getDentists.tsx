@@ -1,7 +1,7 @@
 import { DentistJson } from "../../interface"
 
 export default async function getDentist(queryString?: string):Promise<DentistJson>{
-    let url = "http://localhost:5000/api/v1/dentists"
+    let url = "https://be-project-69-demonparan.vercel.app/api/v1/dentists"
 
     if (queryString) url += `?${queryString}`
 

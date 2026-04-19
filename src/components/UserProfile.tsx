@@ -6,7 +6,6 @@ import getUserProfile from "@/libs/getUserProfile"
 import updateUserProfile from "@/libs/updateUserProfile"
 import { DentistItem, UserItem } from "../../interface"
 
-// เพิ่ม Interface รับ targetId
 interface UserProfileProps {
   targetId?: string;
 }
@@ -16,7 +15,7 @@ export default function UserProfile({ targetId }: UserProfileProps) {
   const user = session?.user as UserItem
   
   const [dentistInfo, setDentistInfo] = useState<DentistItem | null>(null)
-  // เพิ่ม State สำหรับเก็บข้อมูลพื้นฐานของเป้าหมาย (ป้องกันการแสดงผลอีเมล/ชื่อของ Admin)
+
   const [targetUserBaseInfo, setTargetUserBaseInfo] = useState<{name: string, email: string, phone: string} | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -34,9 +33,8 @@ export default function UserProfile({ targetId }: UserProfileProps) {
     workingHoursEnd: 17,
   })
 
-  // กำหนด ID ที่จะดึงข้อมูล ถ้ามี targetId แสดงว่าดึงของหมอเป้าหมาย ถ้าไม่มีดึงของตัวเอง
   const userIdToFetch = targetId || user?._id;
-  // บังคับให้เป็น Dentist Mode หากกำลังดู Profile ของเป้าหมาย (targetId)
+
   const isDentistMode = targetId ? true : user?.role === "dentist";
 
   const fetchProfileData = async () => {
@@ -58,7 +56,6 @@ export default function UserProfile({ targetId }: UserProfileProps) {
           }))
         }
         
-        // เก็บข้อมูล User พื้นฐานที่ดึงมาจาก API
         setTargetUserBaseInfo({
             name: userProfileRes.data.name || "",
             email: userProfileRes.data.email || "",
@@ -117,7 +114,6 @@ export default function UserProfile({ targetId }: UserProfileProps) {
         }
       }
 
-      // ใช้ userIdToFetch ในการอัปเดต เพื่อให้ Admin แก้ของหมอได้
       const data = await updateUserProfile(session.accessToken as string, userIdToFetch, payload)
 
       if (data.success) {
@@ -141,9 +137,6 @@ export default function UserProfile({ targetId }: UserProfileProps) {
   }
 
   if (!user && !targetId) return null
-
-  // ส่วนแสดงผลด้านล่าง ให้แก้ไขตัวแปรที่แสดงข้อมูลจาก user เป็น targetUserBaseInfo ให้หมด 
-  // เช่น {targetUserBaseInfo?.email} แทน {user.email}
 
   return (
     <>

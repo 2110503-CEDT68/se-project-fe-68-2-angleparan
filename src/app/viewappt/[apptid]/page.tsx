@@ -79,11 +79,9 @@ export default async function EditApptPage({
             <span>{apptDate}</span>
           </div>
 
-          {/* ── Rating form (เพิ่ม rating ให้หมอคนนี้ได้ที่นี่) ── */}
           <RatingForm dentistId={targetDentistId} dentistName={dentist.name} />
         </div>
 
-        {/* ── Edit booking section ── */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm">
           <EditBookingContent 
             apptId={apptId} 

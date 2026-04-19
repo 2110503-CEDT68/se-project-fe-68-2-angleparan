@@ -2,7 +2,7 @@ import { DentistItem } from "../../interface"
 
 export default async function getDentist(id: string): Promise<DentistItem> {
   const response = await fetch(
-    `http://localhost:5000/api/v1/dentists/${id}`
+    `https://be-project-69-demonparan.vercel.app/api/v1/dentists/${id}`
   );
 
   if (!response.ok) {
