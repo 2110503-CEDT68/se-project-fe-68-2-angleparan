@@ -1,4 +1,3 @@
-
 import Image from 'next/image'
 import TopMenuItem from './TopMenuItem'
 import { getServerSession } from 'next-auth'
@@ -8,6 +7,22 @@ import Link from "next/link"
 export default async function TopMenu() {
   const session = await getServerSession(authOptions)
   
+  const role = session?.user?.role || 'guest'
+
+  let dentistLinkTitle = "Dentists"
+  let apptLinkTitle = "Appointments"
+
+  if (role === 'admin') {
+    dentistLinkTitle = "Manage Dentists"
+    apptLinkTitle = "All Appointments"
+  } else if (role === 'dentist') {
+    dentistLinkTitle = "Dentist Catalog"
+    apptLinkTitle = "My Schedule"
+  } else if (role === 'user') {
+    dentistLinkTitle = "Create Appointment"
+    apptLinkTitle = "My Appointments"
+  }
+
   return (
     <nav className="h-[65px] w-full fixed top-0 bg-white shadow-sm flex items-center px-6 border-b border-blue-100 z-50 transition-all">
       
@@ -19,21 +34,20 @@ export default async function TopMenu() {
           height={45}
           className="object-contain rounded-lg"
         />
-        
         <span className="font-bold text-xl text-blue-900">DentalCare</span>
       </Link>
       
       <div className="flex gap-6 h-full items-center">
-        <TopMenuItem title="Create Appointment" pageRef="/dentist" />
-        <TopMenuItem title="View Appointment" pageRef="/viewappt"/>
+        <TopMenuItem title={dentistLinkTitle} pageRef="/dentist" />
+        <TopMenuItem title={apptLinkTitle} pageRef="/viewappt"/>
       </div>
 
       <div className='ml-auto flex items-center'>
         {session ? (
           <div className='flex items-center gap-5'>
             <div className='text-sm font-medium text-blue-900 bg-blue-50 px-4 py-2 rounded-full border border-blue-100 shadow-sm'>
-              <span className="font-bold text-blue-600">
-                {session.user.role === 'admin' ? 'Admin' : 'User'}
+              <span className="font-bold text-blue-600 capitalize">
+                {role}
               </span>
               <span className="mx-1 text-gray-400">|</span> 
               {session.user?.name}
