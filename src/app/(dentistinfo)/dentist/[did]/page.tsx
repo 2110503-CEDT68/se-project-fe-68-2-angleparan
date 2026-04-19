@@ -6,9 +6,10 @@ import RatingSection from "@/components/RatingSection";
 export default async function DentistDetailPage({
   params,
 }: {
-  params: { did: string };
+  params: Promise<{ did: string }>;
 }) {
-  const { did } = params; 
+  const resolvedParams = await params;
+  const { did } = resolvedParams;
 
   const dentist = await getDentist(did);
 
