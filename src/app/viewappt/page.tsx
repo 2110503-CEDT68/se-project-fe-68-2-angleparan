@@ -26,7 +26,9 @@ export default function ViewApptPage() {
         return <LoginPrompt />
     }
 
-    const isAdmin = session.user.role === "admin"
+    const role = session.user.role;
+    const isAdmin = role === "admin";
+    const isDentist = role === "dentist";
 
     return (
         <main className="py-12 flex flex-col items-center bg-slate-50 min-h-screen">
@@ -34,15 +36,23 @@ export default function ViewApptPage() {
                 
                 <div className="text-center mb-10">
                     <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
-                        {isAdmin ? "Appointment Management" : "My Appointments"}
+                        {isAdmin ? "Appointment Management" : isDentist ? "Dentist Dashboard" : "My Appointments"}
                     </h1>
                     <p className="text-slate-500 mt-3 text-lg">
-                        {isAdmin ? "Manage all patient bookings and schedules." : "View and manage your upcoming dental visits."}
+                        {isAdmin ? "Manage all patient bookings and schedules." 
+                         : isDentist ? "View your profile and manage your upcoming patient appointments." 
+                         : "View and manage your upcoming dental visits."}
                     </p>
                 </div>
 
+                {/* การแสดงผลส่วนหัวตาม Role */}
                 {isAdmin ? (
                     <ApptFilter filterDate={filterDate} setFilterDate={setFilterDate} />
+                ) : isDentist ? (
+                    <>
+                        <UserProfile />
+                        <ApptFilter filterDate={filterDate} setFilterDate={setFilterDate} />
+                    </>
                 ) : (
                     <UserProfile />
                 )}
@@ -50,7 +60,7 @@ export default function ViewApptPage() {
                 <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-slate-200">
                     <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
                         <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                            {isAdmin ? "All Appointments" : "Your Schedule"}
+                            {isAdmin || isDentist ? "All Appointments" : "Your Schedule"}
                         </h2>
                     </div>
                     

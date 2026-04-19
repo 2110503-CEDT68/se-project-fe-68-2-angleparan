@@ -23,11 +23,19 @@ export interface DentistJson {
   data: DentistItem[];
 }
 
+export interface UserItem {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role?: string;
+  dentistProfile?: DentistItem;
+}
 
 export interface AppointmentItem {
   _id: string;
   apptDate: string; // Date จาก backend -> string (ISO)
-  user: string;     // ObjectId (user id)
+  user: string | UserItem;     // ObjectId (user id)
   dentist: string | DentistItem;  // ObjectId (dentist id)
   createdAt?: string;
 }
