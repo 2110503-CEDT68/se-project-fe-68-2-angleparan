@@ -91,7 +91,7 @@ function RatingBar({ star, count, total }: { star: number; count: number; total:
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function RatingSection({ dentistId }: { dentistId: string }) {
+export default function RatingSection({ dentistId, isDashboard = false }: { dentistId: string, isDashboard?: boolean }) {
   const { data: session } = useSession();
 
   const [ratings, setRatings] = useState<RatingItem[]>([]);
@@ -105,10 +105,12 @@ export default function RatingSection({ dentistId }: { dentistId: string }) {
 
   // Fetch ratings
   const fetchRatings = async () => {
+    if (!dentistId) return; // ไม่ทำงานถ้าไม่ได้ส่ง ID มา
+    
     try {
       setLoading(true);
       const res = await getRatings(dentistId);
-      setRatings(res.data);
+      setRatings(res.data || []);
     } catch {
       // silently fail — ratings are non-critical
     } finally {
@@ -185,11 +187,13 @@ export default function RatingSection({ dentistId }: { dentistId: string }) {
 
   return (
     <section className="w-full mt-10">
-      {/* ── Header ── */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="h-8 w-1 rounded-full bg-blue-500" />
-        <h2 className="text-2xl font-bold text-slate-800">Patient Reviews</h2>
-      </div>
+      {/* ── Header ── ซ่อนในหน้า Dashboard */}
+      {!isDashboard && (
+        <div className="flex items-center gap-3 mb-6">
+          <div className="h-8 w-1 rounded-full bg-blue-500" />
+          <h2 className="text-2xl font-bold text-slate-800">Patient Reviews</h2>
+        </div>
+      )}
 
       {/* ── Summary card ── */}
       {!loading && total > 0 && (
@@ -212,8 +216,8 @@ export default function RatingSection({ dentistId }: { dentistId: string }) {
         </div>
       )}
 
-      {/* ── Leave a review (only for logged-in users who haven't reviewed yet) ── */}
-      {session && !myExistingRating && (
+      {/* ── Leave a review (ซ่อนกล่องนี้ในหน้า Dashboard) ── */}
+      {!isDashboard && session && !myExistingRating && (
         <div className="bg-gradient-to-br from-blue-50 to-slate-50 border border-blue-100 rounded-2xl p-6 mb-8 shadow-sm">
           <h3 className="text-lg font-semibold text-slate-700 mb-4 flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -270,8 +274,8 @@ export default function RatingSection({ dentistId }: { dentistId: string }) {
         </div>
       )}
 
-      {/* "Already reviewed" notice */}
-      {session && myExistingRating && (
+      {/* "Already reviewed" notice (ซ่อนในหน้า Dashboard) */}
+      {!isDashboard && session && myExistingRating && (
         <div className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-xl px-5 py-3 mb-6 text-sm">
           <span className="text-amber-700 font-medium flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -286,8 +290,8 @@ export default function RatingSection({ dentistId }: { dentistId: string }) {
         </div>
       )}
 
-      {/* Not logged in */}
-      {!session && (
+      {/* Not logged in (ซ่อนในหน้า Dashboard) */}
+      {!isDashboard && !session && (
         <div className="bg-slate-50 border border-dashed border-slate-300 rounded-xl px-5 py-4 mb-6 text-sm text-slate-500 text-center">
           <a href="/login" className="text-blue-600 font-semibold hover:underline">Log in</a> to leave a review.
         </div>
@@ -307,7 +311,7 @@ export default function RatingSection({ dentistId }: { dentistId: string }) {
             <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
           </svg>
           <p className="font-medium">No reviews yet.</p>
-          <p className="text-sm mt-1">Be the first to review this dentist!</p>
+          {!isDashboard && <p className="text-sm mt-1">Be the first to review this dentist!</p>}
         </div>
       ) : (
         <div className="space-y-4">
@@ -356,7 +360,7 @@ export default function RatingSection({ dentistId }: { dentistId: string }) {
                   {/* Stars + delete */}
                   <div className="flex flex-col items-end gap-2 shrink-0">
                     <StarDisplay value={r.rating} size={15} />
-                    {isOwner && (
+                    {isOwner && !isDashboard && (
                       <button
                         onClick={() => handleDelete(r._id)}
                         className="text-xs text-red-400 hover:text-red-600 transition-colors"
