@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useSession } from "next-auth/react"
 import deleteAppointment from "@/libs/deleteAppointment"
 import getAppointment from "@/libs/getAppointments"
-import { AppointmentItem, DentistItem, UserItem } from "../../interface"
+import { AppointmentItem, AppointmentStatus, DentistItem, UserItem } from "../../interface"
 import Link from "next/link"
 
 interface ApptListProps {
@@ -12,6 +12,13 @@ interface ApptListProps {
   isAdmin?: boolean
   targetDentistId?: string
 }
+
+const STATUS_BADGE: Record<AppointmentStatus, { label: string; cls: string }> = {
+  pending:   { label: "Pending",   cls: "bg-amber-50 text-amber-700 border-amber-200" },
+  confirmed: { label: "Confirmed", cls: "bg-blue-50 text-blue-700 border-blue-200" },
+  cancelled: { label: "Cancelled", cls: "bg-red-50 text-red-700 border-red-200" },
+  completed: { label: "Completed", cls: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+};
 
 export default function ApptList({ filterDate, isAdmin, targetDentistId }: ApptListProps) {
   const { data: session } = useSession()
@@ -86,11 +93,17 @@ export default function ApptList({ filterDate, isAdmin, targetDentistId }: ApptL
       {appointments.map((appt) => {
         const dentist = typeof appt.dentist === "object" ? (appt.dentist as DentistItem) : null
         const patient = typeof appt.user === "object" ? (appt.user as UserItem) : null
+        const status: AppointmentStatus = appt.status ?? "pending"
+        const statusBadge = STATUS_BADGE[status]
+        const isCancelled = status === "cancelled"
+        const isCompleted = status === "completed"
+
 
         return (
           <div
             key={appt._id}
-            className="group relative bg-white rounded-2xl border border-slate-200 hover:border-blue-400 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 p-6"
+            className={`group relative bg-white rounded-2xl border hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 p-6
+              ${isCancelled ? "border-red-100 opacity-75" : "border-slate-200 hover:border-blue-400"}`}
           >
             <Link href={`/viewappt/${appt._id}`}>
               <button 
@@ -110,7 +123,19 @@ export default function ApptList({ filterDate, isAdmin, targetDentistId }: ApptL
                     {dentist?.name?.charAt(0) || "D"}
                   </div>
                   <div>
-                    <h3 className="font-bold text-slate-900 text-xl mb-0.5">{dentist?.name ?? "Unknown Dentist"}</h3>
+                   <div className="flex items-center gap-2 flex-wrap">
+                      <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-bold text-slate-900 text-xl">{dentist?.name ?? "Unknown Dentist"}</h3>
+                      {/* Status badge */}
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${statusBadge.cls}`}>
+                        {statusBadge.label}
+                      </span>
+                    </div>
+                      {/* Status badge */}
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${statusBadge.cls}`}>
+                        {statusBadge.label}
+                      </span>
+                    </div>
                     <span className="inline-block px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-md">
                       {dentist?.expertise ?? "General Dentistry"}
                     </span>
@@ -154,15 +179,17 @@ export default function ApptList({ filterDate, isAdmin, targetDentistId }: ApptL
               </div>
 
               {/* ปุ่ม Cancel */}
-              <div className="flex md:flex-col absolute right-5 bottom-5 pt-5 md:pt-0 border-t md:border-t-0 border-slate-100 md:ml-4">
-                <button
-                  onClick={() => handleCancel(appt._id)}
-                  className="w-full md:w-auto px-5 py-2.5 bg-white text-red-600 border-2 border-red-100 hover:bg-red-50 hover:border-red-200 rounded-xl text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-2"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                  Cancel Booking
-                </button>
-              </div>
+              {!isCancelled && !isCompleted && (
+                <div className="flex md:flex-col absolute right-5 bottom-5 pt-5 md:pt-0 border-t md:border-t-0 border-slate-100 md:ml-4">
+                  <button
+                    onClick={() => handleCancel(appt._id)}
+                    className="w-full md:w-auto px-5 py-2.5 bg-white text-red-600 border-2 border-red-100 hover:bg-red-50 hover:border-red-200 rounded-xl text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-2"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    Cancel Booking
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )

@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { RatingItem } from "../../interface";
+import { RatingItem, AppointmentStatus } from "../../interface";
 import addRatingLib from "@/libs/addRating";
 import deleteRatingLib from "@/libs/deleteRating";
 import getRatings from "@/libs/getRatings";
+
 
 function StarInput({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   const [hovered, setHovered] = useState(0);
@@ -54,10 +55,11 @@ const STAR_LABELS = ["", "Poor", "Fair", "Good", "Very Good", "Excellent"];
 interface RatingFormProps {
   dentistId: string;
   dentistName: string;
+  appointmentStatus: AppointmentStatus;
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function RatingForm({ dentistId, dentistName }: RatingFormProps) {
+export default function RatingForm({ dentistId, dentistName, appointmentStatus }: RatingFormProps) {
   const { data: session } = useSession();
 
   const [myRating, setMyRating] = useState(0);
@@ -136,7 +138,7 @@ export default function RatingForm({ dentistId, dentistName }: RatingFormProps) 
       </div>
     );
   }
-
+  if (session.user?.role === "dentist") return null;
   return (
     <div className="mt-6 border-t border-slate-100 pt-6">
       <h3 className="text-base font-bold text-slate-700 mb-4 flex items-center gap-2">
@@ -145,8 +147,23 @@ export default function RatingForm({ dentistId, dentistName }: RatingFormProps) 
         </svg>
         รีวิวทันตแพทย์ {dentistName}
       </h3>
-
-      {existingRating ? (
+      {/* Gate: แสดงได้เฉพาะเมื่อสถานะ completed */}
+      {appointmentStatus !== "completed" ? (
+        <div className={`rounded-xl border px-4 py-4 text-sm font-medium flex items-start gap-3
+          ${appointmentStatus === "cancelled"
+            ? "bg-red-50 border-red-200 text-red-600"
+            : "bg-slate-50 border-slate-200 text-slate-500"
+          }`}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          {appointmentStatus === "pending" && "สามารถให้คะแนนได้หลังจากการนัดหมายเสร็จสิ้น (Completed) แล้วเท่านั้น"}
+          {appointmentStatus === "confirmed" && "การนัดหมายยืนยันแล้ว — สามารถรีวิวได้หลังจากหมอทำการ Completed"}
+          {appointmentStatus === "cancelled" && "ไม่สามารถรีวิวได้ เนื่องจากการนัดหมายถูกยกเลิก"}
+        </div>
+      ): existingRating ? (
         // แสดงรีวิวที่เคยส่งไปแล้ว
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">

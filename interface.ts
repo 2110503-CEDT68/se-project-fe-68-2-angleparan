@@ -32,11 +32,14 @@ export interface UserItem {
   dentistProfile?: DentistItem;
 }
 
+export type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
+
 export interface AppointmentItem {
   _id: string;
   apptDate: string; // Date จาก backend -> string (ISO)
   user: string | UserItem;     // ObjectId (user id)
   dentist: string | DentistItem;  // ObjectId (dentist id)
+  status: AppointmentStatus;
   createdAt?: string;
 }
 
