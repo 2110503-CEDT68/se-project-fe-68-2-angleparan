@@ -27,7 +27,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  console.log("authOptions:", authOptions);
+  
 
   const nextAuthSession = await getServerSession(authOptions)
   return (

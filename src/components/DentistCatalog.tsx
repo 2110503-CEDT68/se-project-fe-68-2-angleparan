@@ -40,10 +40,10 @@ export default async function DentistCatalog({
                                 DentistName={Dentist.name}
                                 experience={Dentist.experience}
                                 expertist={Dentist.expertise}
-                            did={Dentist._id}
-                            workingHours={Dentist.workingHours}
-                            averageRating={ratingInfo?.avg}
-                            ratingCount={ratingInfo?.count}
+                                did={Dentist._id}
+                                workingHours={Dentist.workingHours}
+                                averageRating={ratingInfo?.avg}
+                                ratingCount={ratingInfo?.count}
                         />)
                     })
                 ) : (

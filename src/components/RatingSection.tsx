@@ -175,7 +175,7 @@ export default function RatingSection({ dentistId, isDashboard = false }: { dent
 
   // Delete own rating
   const handleDelete = async (ratingId: string) => {
-    if (!confirm("Delete your review?")) return;
+    if (!confirm("Delete review?")) return;
     try {
       const token = (session?.user as any)?.accessToken;
       await deleteRatingLib(ratingId, token);
@@ -326,6 +326,9 @@ export default function RatingSection({ dentistId, isDashboard = false }: { dent
               .join("")
               .toUpperCase()
               .slice(0, 2);
+            const role = (session?.user as any)?.role;
+            const isAdmin = role === "admin";
+
 
             return (
               <div
@@ -358,9 +361,10 @@ export default function RatingSection({ dentistId, isDashboard = false }: { dent
                   </div>
 
                   {/* Stars + delete */}
+                  
                   <div className="flex flex-col items-end gap-2 shrink-0">
                     <StarDisplay value={r.rating} size={15} />
-                    {isOwner && !isDashboard && (
+                    {(isOwner || isAdmin) && !isDashboard && (
                       <button
                         onClick={() => handleDelete(r._id)}
                         className="text-xs text-red-400 hover:text-red-600 transition-colors"
