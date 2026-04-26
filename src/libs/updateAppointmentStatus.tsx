@@ -3,8 +3,21 @@ import { AppointmentStatus } from "../../interface";
 export default async function updateAppointmentStatus(
   apptId: string,
   status: AppointmentStatus,
-  token: string
+  token: string,
+  treatmentDetails?: string,
+  cancelReason?: string
 ) {
+  // จัดเตรียมข้อมูล Payload ตาม Status
+  const bodyData: any = { status };
+  
+  if (status === "completed" && treatmentDetails) {
+    bodyData.treatmentDetails = treatmentDetails;
+  }
+  
+  if (status === "cancelled" && cancelReason) {
+    bodyData.cancelReason = cancelReason;
+  }
+
   const response = await fetch(
     `https://be-project-69-demonparan.vercel.app/api/v1/appointments/${apptId}`,
     {
@@ -13,7 +26,7 @@ export default async function updateAppointmentStatus(
         "Content-Type": "application/json",
         authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ status}),
+      body: JSON.stringify(bodyData),
     }
   );
 
