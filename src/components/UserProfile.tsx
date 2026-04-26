@@ -211,7 +211,7 @@ export default function UserProfile({ targetId }: UserProfileProps) {
 
       {/* --- Popup Modal --- */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+        <div className="fixed top-0 left-0 w-screen h-[100dvh] z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
           <div className="bg-white rounded-3xl w-full max-w-lg shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
             
             {/* Modal Header */}
@@ -243,7 +243,7 @@ export default function UserProfile({ targetId }: UserProfileProps) {
               <form id="profile-form" onSubmit={handleUpdateProfile} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
-                  <input type="text" required value={profileForm.name} onChange={e => setProfileForm({...profileForm, name: e.target.value})} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+                  <input type="text" required value={profileForm.name} onChange={e => setProfileForm({...profileForm, name: e.target.value})} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-slate-900 bg-white" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Email <span className="text-slate-400 font-normal">(Read-only)</span></label>
@@ -251,26 +251,26 @@ export default function UserProfile({ targetId }: UserProfileProps) {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
-                  <input type="tel" required value={profileForm.phone} onChange={e => setProfileForm({...profileForm, phone: e.target.value})} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+                  <input type="tel" required value={profileForm.phone} onChange={e => setProfileForm({...profileForm, phone: e.target.value})} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-slate-900 bg-white" />
                 </div>
 
                 {isDentistMode && (
                   <>
                     <div className="pt-4 border-t border-slate-100">
                       <label className="block text-sm font-medium text-blue-700 mb-1">Expertise</label>
-                      <input type="text" value={profileForm.expertise} onChange={e => setProfileForm({...profileForm, expertise: e.target.value})} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+                      <input type="text" value={profileForm.expertise} onChange={e => setProfileForm({...profileForm, expertise: e.target.value})} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-slate-900 bg-white" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-blue-700 mb-1">Experience (Years)</label>
-                        <input type="number" min="0" value={profileForm.experience} onChange={e => setProfileForm({...profileForm, experience: Number(e.target.value)})} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all" />
+                        <input type="number" min="0" value={profileForm.experience} onChange={e => setProfileForm({...profileForm, experience: Number(e.target.value)})} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-slate-900 bg-white" />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-blue-700 mb-1">Working Hours</label>
                         <div className="flex items-center gap-2">
-                          <input type="number" min="0" max="23" value={profileForm.workingHoursStart} onChange={e => setProfileForm({...profileForm, workingHoursStart: Number(e.target.value)})} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-center outline-none" />
+                          <input type="number" min="0" max="23" value={profileForm.workingHoursStart} onChange={e => setProfileForm({...profileForm, workingHoursStart: Number(e.target.value)})} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-center outline-none text-slate-900 bg-white" />
                           <span className="text-slate-400">-</span>
-                          <input type="number" min="0" max="23" value={profileForm.workingHoursEnd} onChange={e => setProfileForm({...profileForm, workingHoursEnd: Number(e.target.value)})} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-center outline-none" />
+                          <input type="number" min="0" max="23" value={profileForm.workingHoursEnd} onChange={e => setProfileForm({...profileForm, workingHoursEnd: Number(e.target.value)})} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-center outline-none text-slate-900 bg-white" />
                         </div>
                       </div>
                     </div>
