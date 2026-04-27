@@ -305,9 +305,9 @@ export default function RecordList({ filterDate, searchName, sortOrder, role }: 
                   {/* RatingForm */}
                   <RatingForm
                     dentistId={
-                      typeof rec.dentist === "object"
+                      (typeof rec.dentist === "object"
                         ? rec.dentist._id
-                        : rec.dentist
+                        : rec.dentist) || ""
                     }
                     dentistName={
                       typeof rec.dentist === "object"
@@ -319,10 +319,6 @@ export default function RecordList({ filterDate, searchName, sortOrder, role }: 
                 </div>
               </div>
             )}
-
-
-
-
           </div>
         )
       })}
