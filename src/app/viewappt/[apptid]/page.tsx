@@ -7,7 +7,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { AppointmentStatus } from "../../../../interface";
 
-
 export default async function EditApptPage({
   params,
   searchParams,
@@ -60,7 +59,17 @@ export default async function EditApptPage({
 
   return (
     <main className="bg-slate-50 min-h-screen py-10 pb-20">
-      <div className="max-w-2xl mx-auto px-4 space-y-6">
+      {(appointmentStatus === "pending" || appointmentStatus === "confirmed") && (
+        <div className="w-full">
+          <EditBookingContent 
+            apptId={apptId} 
+            currentDentist={dentist} 
+            initialDate={appointment.apptDate} 
+          />
+        </div>
+      )}
+
+      <div className="max-w-5xl mx-auto px-4 space-y-6 mb-8">
 
         {/* ── Appointment info card ── */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
@@ -74,7 +83,7 @@ export default async function EditApptPage({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 rounded-xl px-4 py-3">
+          <div className="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 rounded-xl px-4 py-3 mb-4">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
               <line x1="16" x2="16" y1="2" y2="6"/>
@@ -83,35 +92,26 @@ export default async function EditApptPage({
             </svg>
             <span>{apptDate}</span>
           </div>
-          {/* Status Control — Dentist เห็นปุ่มเปลี่ยนสถานะ, คนอื่นเห็นแค่ badge */}
+
+          {/* Status Control */}
           <AppointmentStatusControl
             apptId={apptId}
             currentStatus={appointmentStatus}
           />
 
-          {/* Rating Form — แสดงเฉพาะเมื่อสถานะ completed */}
+          {/* Rating Form */}
           <RatingForm
             dentistId={targetDentistId}
             dentistName={dentist.name}
             appointmentStatus={appointmentStatus}
           />
-          
         </div>
+      </div>
+      
 
-        
-        {/* Edit booking — ซ่อนเมื่อสถานะ cancelled หรือ completed */}
-        {(appointmentStatus === "pending" || appointmentStatus === "confirmed") && (
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm">
-            <EditBookingContent 
-              apptId={apptId} 
-              currentDentist={dentist} 
-              initialDate={appointment.apptDate} 
-            />
-          </div>
-        )}
-
-        {/* Message เมื่อ cancelled/completed */}
-        {(appointmentStatus === "cancelled" || appointmentStatus === "completed") && role !== "dentist" && (
+      {/* Message เมื่อ cancelled/completed */}
+      {(appointmentStatus === "cancelled" || appointmentStatus === "completed") && role !== "dentist" && (
+        <div className="max-w-5xl mx-auto px-4 mt-8">
           <div className={`rounded-2xl border p-5 text-center text-sm font-medium
             ${appointmentStatus === "cancelled"
               ? "bg-red-50 border-red-200 text-red-600"
@@ -121,8 +121,8 @@ export default async function EditApptPage({
               ? "การนัดหมายนี้ถูกยกเลิกแล้ว ไม่สามารถแก้ไขได้"
               : "การนัดหมายเสร็จสิ้นแล้ว ไม่สามารถแก้ไขได้"}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </main>
   );
 }

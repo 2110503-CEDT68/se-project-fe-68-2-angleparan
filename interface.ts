@@ -77,3 +77,23 @@ export interface RatingSummaryJson {
   success: boolean;
   data: RatingSummaryMap;
 }
+
+export interface RecordItem {
+  _id: string;
+  treatmentDetails?: string; 
+  cancelReason?: string;     
+  notes?: string;            
+  status: AppointmentStatus; 
+  apptDate: string;
+  user?: UserItem; 
+  dentist?: DentistItem;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface RecordJson {
+  success: boolean;
+  count: number;
+  pagination?: any;
+  data: RecordItem[];
+}

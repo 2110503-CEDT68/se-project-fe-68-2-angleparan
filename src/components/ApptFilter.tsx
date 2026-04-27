@@ -9,8 +9,8 @@ export default function ApptFilter({ filterDate, setFilterDate }: AdminFilterPro
   return (
     <div className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 border border-slate-200 rounded-3xl p-6 md:p-8">
       <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-        Filter Appointments
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        Search & Filter Appointments
       </h2>
       
       <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-end">
@@ -20,7 +20,7 @@ export default function ApptFilter({ filterDate, setFilterDate }: AdminFilterPro
             type="date" 
             value={filterDate}
             onChange={(e) => setFilterDate(e.target.value)}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white outline-none transition-all text-slate-700 font-medium"
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white outline-none transition-all text-slate-700 font-medium [color-scheme:light]"
           />
         </div>
         
