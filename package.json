@@ -18,9 +18,9 @@
     "@reduxjs/toolkit": "^2.11.2",
     "@tailwindcss/postcss": "^4.2.1",
     "dayjs": "^1.11.19",
-    "next": "15.4.8",
+    "next": "^16.1.7",
     "next-auth": "^4.24.11",
-    "postcss": "^8.5.8",
+    "postcss": "^8.5.10",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-redux": "^9.2.0",
@@ -40,6 +40,11 @@
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5"
+  },
+  "overrides": {
+    "uuid": "^14.0.0",
+    "yaml": "^1.10.3",
+    "postcss": "^8.5.10"
   },
   "description": "Vercel : - https://fe-project-68-demonparan.vercel.app/\r [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/fpUm_Avi)",
   "main": "jest.config.js",
