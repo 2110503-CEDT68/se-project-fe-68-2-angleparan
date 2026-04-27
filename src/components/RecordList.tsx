@@ -94,6 +94,28 @@ export default function RecordList({ filterDate, searchName, sortOrder, role }: 
     }
   };
 
+  const handleStatusChange = async (id: string, status: string) => {
+    if (!session?.accessToken) return;
+
+    try {
+      await updateRecord(id, session.accessToken, { status });
+
+      // ✅ force update ทั้ง record object (สำคัญ)
+      setRecords((prev) =>
+        prev.map((rec) =>
+          rec._id === id
+            ? { ...rec, status: status as any }
+            : rec
+        )
+      );
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update status");
+    }
+  };
+
+
+
   const toggleExpand = (id: string) => {
     setExpandedIds((prev) => 
       prev.includes(id) ? prev.filter(rId => rId !== id) : [...prev, id]
@@ -144,7 +166,12 @@ export default function RecordList({ filterDate, searchName, sortOrder, role }: 
         const canEdit = canEditTreatment || canEditReason;
 
         return (
-          <div key={rec._id} className="group relative bg-white rounded-2xl border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all duration-300 px-6 pt-6 pb-3 flex flex-col gap-4">
+          <div
+            key={rec._id}
+            data-testid="record-item appointment-item"
+            className="group relative bg-white rounded-2xl border border-slate-200"
+          >
+
             
             {/* Header: Profile & Status */}
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
@@ -173,11 +200,28 @@ export default function RecordList({ filterDate, searchName, sortOrder, role }: 
                   </>
                 )}
               </div>
-
               <div className="flex flex-col items-end gap-2 shrink-0">
-                <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${getStatusColor(rec.status)}`}>
+  
+                <select
+                  data-testid="status-select"
+                  value={rec.status}
+                  onChange={(e) => handleStatusChange(rec._id, e.target.value)}
+                  className="border rounded px-2 py-1 text-sm"
+                  disabled={role !== "admin" && role !== "dentist"}
+                >
+                  <option value="pending">pending</option>
+                  <option value="confirmed">confirmed</option>
+                  <option value="completed">completed</option>
+                  <option value="cancelled">cancelled</option>
+                </select>
+
+                <span
+                  data-testid="status-badge"
+                  className={`inline-block px-3 py-1 rounded-full text-xs font-bold uppercase border ${getStatusColor(rec.status)}`}
+                >
                   {rec.status}
                 </span>
+
                 {apptDateObj && (
                   <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium mt-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
@@ -187,7 +231,9 @@ export default function RecordList({ filterDate, searchName, sortOrder, role }: 
                   </div>
                 )}
               </div>
-            </div>
+              </div>
+
+        
 
             {/* Expandable Body: Details / Reason */}
             {isExpanded && (
@@ -204,7 +250,14 @@ export default function RecordList({ filterDate, searchName, sortOrder, role }: 
                     </div>
                     {isEditing ? (
                       <div className="space-y-2">
-                        <textarea value={editValue} onChange={(e) => setEditValue(e.target.value)} className="w-full text-slate-900 bg-white text-sm p-2 rounded-lg border-red-200 focus:border-red-400 focus:ring focus:ring-red-200 outline-none transition-all" rows={3} placeholder="Enter cancellation reason..." />
+                        <textarea
+                          id="cancelReason"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          className="w-full text-slate-900 bg-white text-sm p-2 rounded-lg border-red-200"
+                          rows={3}
+                        />
+
                         <div className="flex justify-end gap-2">
                           <button onClick={() => setEditingId(null)} className="px-3 py-1 text-xs font-medium text-slate-500 bg-white border border-slate-200 hover:bg-slate-50 rounded-md">Cancel</button>
                           <button onClick={() => handleSaveEdit(rec._id, rec.status)} className="px-3 py-1 text-xs font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md">Save</button>
@@ -226,7 +279,13 @@ export default function RecordList({ filterDate, searchName, sortOrder, role }: 
                     </div>
                     {isEditing ? (
                       <div className="space-y-2">
-                        <textarea value={editValue} onChange={(e) => setEditValue(e.target.value)} className="w-full text-slate-900 bg-white text-sm p-2 rounded-lg border-emerald-200 focus:border-emerald-400 focus:ring focus:ring-emerald-200 outline-none transition-all" rows={3} placeholder="Enter treatment details..." />
+                        <textarea
+                          id="cancelReason"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          className="w-full text-slate-900 bg-white text-sm p-2 rounded-lg border-red-200"
+                          rows={3}
+                        />
                         <div className="flex justify-end gap-2">
                           <button onClick={() => setEditingId(null)} className="px-3 py-1 text-xs font-medium text-slate-500 bg-white border border-slate-200 hover:bg-slate-50 rounded-md">Cancel</button>
                           <button onClick={() => handleSaveEdit(rec._id, rec.status)} className="px-3 py-1 text-xs font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md">Save</button>
