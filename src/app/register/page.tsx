@@ -15,7 +15,9 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  
+  const [acceptPolicy, setAcceptPolicy] = useState(false);
+  const [showPolicy, setShowPolicy] = useState(false);
+
   // -- States สำหรับหมอ --
   const [expertise, setExpertise] = useState("");
   const [experience, setExperience] = useState<number>(0);
@@ -217,11 +219,35 @@ export default function RegisterPage() {
             </div>
           )}
 
+          <div className="flex items-start gap-2 mt-4">
+            <input
+              type="checkbox"
+              checked={acceptPolicy}
+              onChange={(e) => setAcceptPolicy(e.target.checked)}
+              className="mt-1"
+            />
+            <p className="text-sm text-slate-600">
+              I agree to the{" "}
+              <button
+                type="button"
+                onClick={() => setShowPolicy(true)}
+                className="text-blue-600 font-semibold hover:underline"
+              >
+                Terms & Privacy Policy
+              </button>
+            </p>
+          </div>
+
+
           <button
             type="submit"
-            disabled={loading}
-            className="w-full rounded-xl bg-blue-600 py-3.5 text-white font-bold tracking-wide transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/20 active:scale-[0.98] mt-6 disabled:bg-blue-400 disabled:shadow-none disabled:active:scale-100 flex items-center justify-center gap-2"
+            disabled={loading || !acceptPolicy}
+            className="w-full rounded-xl bg-blue-600 py-3.5 text-white font-bold tracking-wide transition-all 
+            hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/20 active:scale-[0.98] mt-6 
+            disabled:bg-blue-400 disabled:shadow-none disabled:cursor-not-allowed 
+            flex items-center justify-center gap-2"
           >
+
             {loading ? (
               <>
                 <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -239,8 +265,103 @@ export default function RegisterPage() {
             Log in here
           </Link>
         </div>
-        
+        {showPolicy && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+            onClick={() => setShowPolicy(false)}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white min-w-120 max-w-300 w-full rounded-2xl p-6 shadow-lg relative"
+            >
+              {/* ปิด */}
+              <button
+                onClick={() => setShowPolicy(false)}
+                className="absolute top-3 right-3 text-slate-400 hover:text-red-500"
+              >
+                ✕
+              </button>
+
+              <div className="text-sm text-slate-600 max-h-120 min-w-120 overflow-y-auto space-y-3 leading-relaxed">
+                <p className="font-semibold text-lg text-slate-800">Terms & Privacy Policy</p>
+
+                <p>
+                  By creating an account and using this system, you agree to the following terms and conditions. 
+                  Please read them carefully before proceeding.
+                </p>
+
+                <p>
+                  <span className="font-semibold">1. Personal Information</span><br/>
+                  We collect personal information such as your name, email address, phone number, and other relevant data 
+                  in order to provide appointment scheduling and healthcare-related services. Your information will be stored securely 
+                  and handled in accordance with applicable data protection laws.
+                </p>
+
+                <p>
+                  <span className="font-semibold">2. Use of Information</span><br/>
+                  Your information will be used solely for managing appointments, communication with dentists, 
+                  improving our services, and ensuring proper system functionality. We will not sell or share your personal data 
+                  with third parties without your consent, except where required by law.
+                </p>
+
+                <p>
+                  <span className="font-semibold">3. Account Responsibility</span><br/>
+                  You are responsible for maintaining the confidentiality of your account credentials. 
+                  Any activity performed under your account will be considered your responsibility. 
+                  Please ensure that your login information is kept secure at all times.
+                </p>
+
+                <p>
+                  <span className="font-semibold">4. Appointment Policy</span><br/>
+                  Users are expected to attend scheduled appointments on time. Repeated cancellations or no-shows 
+                  may result in temporary or permanent restrictions from using the service.
+                </p>
+
+                <p>
+                  <span className="font-semibold">5. Reviews and Ratings</span><br/>
+                  Users may provide ratings and feedback after completing appointments. All reviews must be honest, respectful, 
+                  and must not contain inappropriate, offensive, or misleading content. The system reserves the right to remove 
+                  any content that violates these guidelines.
+                </p>
+
+                <p>
+                  <span className="font-semibold">6. Data Security</span><br/>
+                  We implement appropriate technical and organizational measures to protect your data from unauthorized access, 
+                  loss, or misuse. However, no system can guarantee absolute security.
+                </p>
+
+                <p>
+                  <span className="font-semibold">7. System Usage</span><br/>
+                  You agree not to misuse the system, attempt unauthorized access, or perform actions that may harm the system 
+                  or other users. Violations may result in account suspension.
+                </p>
+
+                <p>
+                  <span className="font-semibold">8. Changes to Policy</span><br/>
+                  We reserve the right to update or modify these terms at any time. Continued use of the system after changes 
+                  constitutes acceptance of the updated policy.
+                </p>
+
+                <p>
+                  <span className="font-semibold">9. Contact</span><br/>
+                  If you have any questions regarding these terms or your data, please contact the system administrator.
+                </p>
+              </div>
+
+
+              <button
+                onClick={() => setShowPolicy(false)}
+                className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
+    
   );
+  
+
 }

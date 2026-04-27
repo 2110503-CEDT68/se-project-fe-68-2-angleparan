@@ -1,7 +1,6 @@
 import getSingleAppointment from "@/libs/getSingleAppointment";
 import getDentist from "@/libs/getDentist";
 import EditBookingContent from "@/components/EditBookingContent";
-import RatingForm from "@/components/RatingForm";
 import AppointmentStatusControl from "@/components/AppointmentStatusControl";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
@@ -99,12 +98,6 @@ export default async function EditApptPage({
             currentStatus={appointmentStatus}
           />
 
-          {/* Rating Form */}
-          <RatingForm
-            dentistId={targetDentistId}
-            dentistName={dentist.name}
-            appointmentStatus={appointmentStatus}
-          />
         </div>
       </div>
       

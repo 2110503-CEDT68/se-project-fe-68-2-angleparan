@@ -108,6 +108,7 @@ export default function RatingForm({ dentistId, dentistName, appointmentStatus }
         setFeedback({ text: res.message || "ไม่สามารถส่งรีวิวได้", ok: false });
       }
     } catch {
+      
       setFeedback({ text: "เกิดข้อผิดพลาด กรุณาลองใหม่", ok: false });
     } finally {
       setSubmitting(false);

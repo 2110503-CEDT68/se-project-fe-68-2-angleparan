@@ -6,6 +6,8 @@ import getRecords from "@/libs/getRecords"
 import deleteRecord from "@/libs/deleteRecord"
 import updateRecord from "@/libs/updateRecord"
 import { RecordItem } from "../../interface" 
+import RatingForm from "@/components/RatingForm";
+
 
 interface RecordListProps {
   filterDate: string;
@@ -23,6 +25,10 @@ export default function RecordList({ filterDate, searchName, sortOrder, role }: 
   const [expandedIds, setExpandedIds] = useState<string[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<string>("");
+  const [openRatingId, setOpenRatingId] = useState<string | null>(null);
+
+
+  
 
   const fetchData = async () => {
     if (!session?.accessToken) return;
@@ -198,7 +204,7 @@ export default function RecordList({ filterDate, searchName, sortOrder, role }: 
                     </div>
                     {isEditing ? (
                       <div className="space-y-2">
-                        <textarea value={editValue} onChange={(e) => setEditValue(e.target.value)} className="w-full text-sm p-2 rounded-lg border-red-200 focus:border-red-400 focus:ring focus:ring-red-200 outline-none transition-all" rows={3} placeholder="Enter cancellation reason..." />
+                        <textarea value={editValue} onChange={(e) => setEditValue(e.target.value)} className="w-full text-slate-900 bg-white text-sm p-2 rounded-lg border-red-200 focus:border-red-400 focus:ring focus:ring-red-200 outline-none transition-all" rows={3} placeholder="Enter cancellation reason..." />
                         <div className="flex justify-end gap-2">
                           <button onClick={() => setEditingId(null)} className="px-3 py-1 text-xs font-medium text-slate-500 bg-white border border-slate-200 hover:bg-slate-50 rounded-md">Cancel</button>
                           <button onClick={() => handleSaveEdit(rec._id, rec.status)} className="px-3 py-1 text-xs font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md">Save</button>
@@ -220,7 +226,7 @@ export default function RecordList({ filterDate, searchName, sortOrder, role }: 
                     </div>
                     {isEditing ? (
                       <div className="space-y-2">
-                        <textarea value={editValue} onChange={(e) => setEditValue(e.target.value)} className="w-full text-sm p-2 rounded-lg border-emerald-200 focus:border-emerald-400 focus:ring focus:ring-emerald-200 outline-none transition-all" rows={3} placeholder="Enter treatment details..." />
+                        <textarea value={editValue} onChange={(e) => setEditValue(e.target.value)} className="w-full text-slate-900 bg-white text-sm p-2 rounded-lg border-emerald-200 focus:border-emerald-400 focus:ring focus:ring-emerald-200 outline-none transition-all" rows={3} placeholder="Enter treatment details..." />
                         <div className="flex justify-end gap-2">
                           <button onClick={() => setEditingId(null)} className="px-3 py-1 text-xs font-medium text-slate-500 bg-white border border-slate-200 hover:bg-slate-50 rounded-md">Cancel</button>
                           <button onClick={() => handleSaveEdit(rec._id, rec.status)} className="px-3 py-1 text-xs font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-md">Save</button>
@@ -238,7 +244,15 @@ export default function RecordList({ filterDate, searchName, sortOrder, role }: 
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-slate-400"><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/><path d="M16 2v4"/><path d="M3 10h18"/><path d="M15 16l2 2 4-4"/></svg>
                     Record updated: {createdDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} • {createdDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute:'2-digit' })}
                   </div>
-
+                  <div className="flex row gap-1.5">
+                  {rec.status === "completed" && (
+                    <button
+                      onClick={() => setOpenRatingId(rec._id)}
+                      className="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-500 hover:bg-blue-500 hover:text-white rounded-lg transition-colors text-xs font-medium w-full sm:w-auto"
+                    >
+                      Review
+                    </button>
+                  )}
                   {role === "admin" && (
                     <button 
                       onClick={() => handleDelete(rec._id)} 
@@ -249,6 +263,7 @@ export default function RecordList({ filterDate, searchName, sortOrder, role }: 
                       Delete
                     </button>
                   )}
+                  </div>
                 </div>
               </div>
             )}
@@ -267,6 +282,46 @@ export default function RecordList({ filterDate, searchName, sortOrder, role }: 
                 )}
               </button>
             </div>
+
+            
+
+            {openRatingId === rec._id && (
+              <div
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+                onClick={() => setOpenRatingId(null)}
+              >
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="bg-white w-full max-w-md rounded-2xl shadow-lg p-6 relative"
+                >
+                  {/* ปุ่มปิด */}
+                  <button
+                    onClick={() => setOpenRatingId(null)}
+                    className="absolute top-3 right-3 text-slate-400 hover:text-red-500"
+                  >
+                    ✕
+                  </button>
+
+                  {/* RatingForm */}
+                  <RatingForm
+                    dentistId={
+                      typeof rec.dentist === "object"
+                        ? rec.dentist._id
+                        : rec.dentist
+                    }
+                    dentistName={
+                      typeof rec.dentist === "object"
+                        ? rec.dentist.name
+                        : "Unknown Dentist"
+                    }
+                    appointmentStatus={rec.status}
+                  />
+                </div>
+              </div>
+            )}
+
+
+
 
           </div>
         )
