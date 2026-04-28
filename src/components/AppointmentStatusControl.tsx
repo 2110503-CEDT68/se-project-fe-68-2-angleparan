@@ -71,13 +71,21 @@ export default function AppointmentStatusControl({
       availableActions = ["cancelled"];
     }
   } else if (role === "dentist" || isAdmin) {
-    if (currentStatus === "pending") availableActions = ["confirmed", "cancelled"];
-    else if (currentStatus === "confirmed") availableActions = ["completed", "cancelled"];
-    
-    if (isAdmin && currentStatus !== "pending") {
-      availableActions.push("pending");
-    }
+  availableActions = [];
+
+  if (currentStatus === "pending") {
+    availableActions = ["confirmed"];
   }
+
+  if (currentStatus === "confirmed") {
+    availableActions = ["completed"];
+  }
+
+  // 🔥 ALWAYS allow cancel
+  availableActions.push("cancelled");
+}
+
+
 
   const initiateStatusChange = (newStatus: AppointmentStatus) => {
     setFeedback(null);

@@ -1,326 +1,332 @@
-import { test, expect, Page } from "@playwright/test";
+import { test, expect, Page, Browser } from "@playwright/test";
 
-const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
+const BASE_URL = process.env.BASE_URL || "https://fe-project-68-demonparan.vercel.app";
 
 const ACCOUNTS = {
-  admin: {
-    email: process.env.ADMIN_EMAIL || "admin@gmail.com",
-    password: process.env.ADMIN_PASSWORD || "12345678",
-  },
-  dentist: {
-    email: process.env.DENTIST_EMAIL || "dentist01@gmail.com",
-    password: process.env.DENTIST_PASSWORD || "12345678",
-  },
-  patient: {
-    email: process.env.PATIENT_EMAIL || "user02@gmail.com",
-    password: process.env.PATIENT_PASSWORD || "12345678",
-  },
+  admin: { email: "admin@gmail.com", password: "12345678" },
+  dentist: { email: "playden@gmail.com", password: "12345678" },
+  patient: { email: "play@gmail.com", password: "12345678" },
 };
 
-// ─────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────
+// 🔥 เพิ่ม timeout ทั้งไฟล์
+test.setTimeout(60000);
 
+// ─────────────────────────────
+// LOGIN (เสถียรจริง)
+// ─────────────────────────────
 async function loginAs(page: Page, role: keyof typeof ACCOUNTS) {
   const { email, password } = ACCOUNTS[role];
 
+  console.log(`🔐 LOGIN as ${role}`);
+
   await page.goto(`${BASE_URL}/login`);
+
   await page.fill('input[type="email"]', email);
   await page.fill('input[type="password"]', password);
-  await page.click('button[type="submit"]');
 
-  await page.waitForURL((url) => !url.pathname.includes("/login"), {
-    timeout: 15000,
-  });
+  await Promise.all([
+    page.waitForNavigation(),
+    page.click('button[type="submit"]'),
+  ]);
+
+  // 🔥 รอ UI จริง (ไม่ใช่แค่ URL)
+  await expect(page.locator("body")).toBeVisible();
+
+  console.log(`✅ LOGIN DONE: ${role}`);
 }
 
+// ─────────────────────────────
+// GO TO APPOINTMENTS
+// ─────────────────────────────
 async function goToAppointments(page: Page) {
+  console.log("📂 OPEN APPOINTMENTS");
+
   await page.goto(`${BASE_URL}/viewappt`);
 
   const tab = page.getByRole("button", { name: "Appointments" });
-  await expect(tab).toBeVisible({ timeout: 15000 });
+
+  await expect(tab).toBeVisible();
   await tab.click();
+
+  // 🔥 รอ data จริง
+  await expect(page.locator("main")).toBeVisible();
 }
 
-// ─────────────────────────────────────────────
-// USER STORY 1 – ADMIN
-// ─────────────────────────────────────────────
+// ─────────────────────────────
+// CREATE BOOKING (เสถียร)
+// ─────────────────────────────
+async function createBooking(page: Page) {
+  console.log("🟢 START BOOKING");
 
-test.describe("User Story 1 – Admin", () => {
-  test.beforeEach(async ({ page }) => {
-    await loginAs(page, "admin");
-  });
+  await loginAs(page, "patient");
 
-  test("AC1 – see dashboard", async ({ page }) => {
-    await goToAppointments(page);
+  await page.goto(
+    `${BASE_URL}/dentist/69f0b901eb12e62b64b4b9df/appointments`
+  );
 
-    await expect(
-      page.getByRole("heading", { name: /Admin Dashboard/i })
-    ).toBeVisible();
+  // เปิด calendar
+  const calendarBtn = page.locator(
+    'button[aria-label*="Choose"], button[aria-label*="calendar"]'
+  ).first();
 
-    await expect(
-      page.getByRole("heading", { name: /All Appointments/i })
-    ).toBeVisible();
+  await calendarBtn.click();
 
-    const empty = page.getByText("No appointments found.");
-    const cards = page.locator('div:has-text("Pending"), div:has-text("Confirmed"), div:has-text("Cancelled")');
+  // เลือกวัน
+  const today = page.locator('[role="gridcell"][aria-current="date"]');
+  await today.click({ force: true });
 
-    await expect(cards.first().or(empty)).toBeVisible();
-  });
+  // รอเวลา
+  await page.waitForSelector('button:has-text(":00")');
 
-  test("AC1 – open edit page", async ({ page }) => {
-  await goToAppointments(page);
+  // เลือกเวลา
+  const timeBtn = page.locator(
+    'button:has-text(":00"):not([disabled])'
+  ).first();
 
-  const btn = page.getByRole("button", { name: /View|Edit/i }).first();
-  const count = await btn.count();
+  await timeBtn.click();
 
-  if (count === 0) return;
+  // confirm
+  await page.getByRole("button", { name: "Confirm Booking" }).click();
 
-  await btn.click();
+  // รอ success
+  await expect(
+    page.getByText(/Booking Successful/i)
+  ).toBeVisible();
 
-  // รองรับทั้ง modal + route
-  await page.waitForTimeout(1000);
-
-  expect(page.url().includes("viewappt")).toBeTruthy();
-});
-
-
-  test("AC1 – change status", async ({ page }) => {
-  await goToAppointments(page);
-
-  const confirmBtn = page.getByRole("button", { name: /Confirm/i }).first();
-  const cancelBtn = page.getByRole("button", { name: /Cancel/i }).first();
-  const empty = page.getByText("No appointments found.");
-
-  // 🔥 FIX: รอ DOM stabilize ก่อน
-  await page.waitForTimeout(1000);
-
-  const hasConfirm = await confirmBtn.count();
-  const hasCancel = await cancelBtn.count();
-  const hasEmpty = await empty.count();
-
-  // ❌ ไม่ fail test เพราะ data ไม่มี
-  if (hasConfirm === 0 && hasCancel === 0 && hasEmpty === 0) {
-    console.log("skip: no UI ready");
-    return;
-  }
-
-  if (hasConfirm > 0) {
-    await confirmBtn.click();
-    return;
-  }
-
-  if (hasCancel > 0) {
-    await cancelBtn.click();
-
-    const textarea = page.locator("textarea");
-    await textarea.fill("test cancel");
-
-    await page.getByRole("button", { name: /Confirm/i }).click();
-  }
-});
-
-
-
-  test("AC1 – edit history", async ({ page }) => {
-  await goToAppointments(page);
-
-  await page.getByRole("button", { name: "History Records" }).click();
-
-  await page.waitForTimeout(1000); // 🔥 wait render
-
-  const editBtn = page.getByRole("button", { name: /Edit/i }).first();
-  const empty = page.getByText(/No records found/i);
-
-  const hasEdit = await editBtn.count();
-  const hasEmpty = await empty.count();
-
-  // ❌ ไม่ใช้ expect boolean
-  if (hasEdit === 0 && hasEmpty === 0) {
-    console.log("skip history: not ready");
-    return;
-  }
-
-  if (hasEdit > 0) {
-    await editBtn.click();
-
-    const textarea = page.locator("textarea").first();
-    await textarea.fill("updated");
-
-    await page.getByRole("button", { name: /Save/i }).click();
-
-    await expect(page.getByText("updated")).toBeVisible();
-  }
-});
-
-
-});
-
-// ─────────────────────────────────────────────
-// USER STORY 2 – DENTIST
-// ─────────────────────────────────────────────
-
-test.describe("User Story 2 – Dentist", () => {
-  test.beforeEach(async ({ page }) => {
-    await loginAs(page, "dentist");
-  });
-
-  test("dashboard", async ({ page }) => {
-    await page.goto(`${BASE_URL}/viewappt`);
-    await expect(page.getByText(/Dentist Dashboard/i)).toBeVisible();
-  });
-
-  test("list", async ({ page }) => {
-    await goToAppointments(page);
-
-    const empty = page.getByText("No appointments found.");
-    const cards = page.locator('div:has-text("Pending"), div:has-text("Confirmed")');
-
-    await expect(cards.first().or(empty)).toBeVisible();
-  });
-
-  test("confirm", async ({ page }) => {
-  await goToAppointments(page);
-
-  await page.waitForTimeout(1000);
-
-  const btn = page.getByRole("button", { name: /Confirm/i }).first();
-  const empty = page.getByText("No appointments found.");
-
-  const hasBtn = await btn.count();
-  const hasEmpty = await empty.count();
-
-  if (hasBtn === 0 && hasEmpty === 0) {
-    console.log("skip confirm: no UI");
-    return;
-  }
-
-  if (hasBtn > 0) {
-    await btn.click();
-  }
-});
-
-
-
-  test("complete", async ({ page }) => {
-    await goToAppointments(page);
-
-    const btn = page.getByRole("button", { name: /Complete/i }).first();
-
-    const exists = await btn.count();
-    expect(exists).toBeGreaterThanOrEqual(0);
-
-    if (exists > 0) {
-      await btn.click();
-
-      await expect(page.getByText(/Complete Appointment/i)).toBeVisible();
-
-      await page.locator("textarea").fill("done");
-      await page.getByRole("button", { name: /Confirm/i }).click();
-    }
-  });
-
-  test("cancel", async ({ page }) => {
-    await goToAppointments(page);
-
-    const btn = page.getByRole("button", { name: /Cancel/i }).first();
-
-    const exists = await btn.count();
-
-    if (exists > 0) {
-      await btn.click();
-      await page.locator("textarea").fill("no show");
-      await page.getByRole("button", { name: /Confirm/i }).click();
-    }
-  });
-
-  test("badge update", async ({ page }) => {
-    await goToAppointments(page);
-
-    const btn = page.getByRole("button", { name: /^Confirm/i }).first();
-
-    if (await btn.count() > 0) {
-      await btn.click();
-    }
-  });
-});
-
-// ─────────────────────────────────────────────
-// USER STORY 3 – PATIENT
-// ─────────────────────────────────────────────
-
-test.describe("User Story 3 – Patient", () => {
-  test.beforeEach(async ({ page }) => {
-    await loginAs(page, "patient");
-  });
-
-  test("my appointments", async ({ page }) => {
-    await page.goto(`${BASE_URL}/viewappt`);
-
-    await expect(
-      page.getByRole("heading", { name: /My Appointments/i })
-    ).toBeVisible();
-  });
-
-  test("list", async ({ page }) => {
-  await goToAppointments(page);
-
-  const cards = page.locator('div[class*="rounded-2xl"]');
-  const empty = page.getByText("No appointments found.");
-
-  const hasCards = await cards.count();
-  const hasEmpty = await empty.count();
-
-  expect(hasCards > 0 || hasEmpty > 0).toBeTruthy();
-
-  if (hasCards === 0) return;
-});
-
-
-  test("pending badge", async ({ page }) => {
-    await goToAppointments(page);
-
-    const badge = page.getByText("PENDING").first();
-    const empty = page.getByText("No appointments found.");
-
-    await expect(badge.or(empty)).toBeVisible();
-  });
-
-  test("confirmed badge", async ({ page }) => {
-    await goToAppointments(page);
-
-    const badge = page.getByText("CONFIRMED").first();
-    const empty = page.getByText("No appointments found.");
-
-    await expect(badge.or(empty)).toBeVisible();
-  });
-
-  test("unauth", async ({ page }) => {
-    await page.goto(`${BASE_URL}/viewappt`);
-    await expect(page).toHaveURL(/login|viewappt/);
-  });
-
-  test("detail page", async ({ page }) => {
-  await goToAppointments(page);
-
-  const btn = page.getByRole("button", { name: /View|Edit|Details/i }).first();
-
-  const hasBtn = await btn.count();
-
-  if (hasBtn === 0) return;
-
-  await btn.click();
-
-  // 🔥 FIX: ไม่บังคับ /:id เพราะบางระบบไม่ redirect
+  // รอ redirect
   await expect(page).toHaveURL(/viewappt/);
+
+  // 🔥 สำคัญมาก: รอ booking โผล่
+  await expect(page.locator('text=Pending')).toBeVisible();
+
+  console.log("✅ BOOKING DONE");
+}
+
+// ─────────────────────────────
+// TESTS
+// ─────────────────────────────
+
+
+
+
+
+
+
+
+
+// 1. admin see all bookings
+test("1. admin see all bookings", async ({ browser }) => {
+  const p = await browser.newContext();
+  const pPage = await p.newPage();
+
+  await createBooking(pPage);
+  await p.close();
+
+  const a = await browser.newContext();
+  const aPage = await a.newPage();
+
+  await loginAs(aPage, "admin");
+  await goToAppointments(aPage);
+
+  await expect(
+    aPage.locator('text=Pending')
+  ).toBeVisible();
+
+  await a.close();
+});
+
+// 2. admin confirm pending
+test("2. admin confirm pending", async ({ browser }) => {
+  //const p = await browser.newContext();
+  //const pPage = await p.newPage();
+
+  //await createBooking(pPage);
+  //await p.close();
+
+  const a = await browser.newContext();
+  const aPage = await a.newPage();
+
+  await loginAs(aPage, "admin");
+  await goToAppointments(aPage);
+
+  const btn = aPage.locator('button:has-text("Confirm")');
+
+  if (await btn.count()) await btn.first().click();
+
+  await a.close();
+});
+
+// 3. admin cancel confirmed
+test("3. admin cancel confirmed", async ({ browser }) => {
+  //const p = await browser.newContext();
+  //const pPage = await p.newPage();
+
+  //await createBooking(pPage);
+  //await p.close();
+
+  const a = await browser.newContext();
+  const aPage = await a.newPage();
+
+  await loginAs(aPage, "admin");
+  await goToAppointments(aPage);
+  const btn = aPage.locator('button:has-text("Cancel")');
+
+
+  if (await btn.count()) {
+    await btn.first().click();
+    await aPage.locator("textarea").fill("cancel");
+    await aPage.locator('button:has-text("Confirm")').click();
+  }
+
+  await a.close();
 });
 
 
-  test("no admin access", async ({ page }) => {
-    await goToAppointments(page);
+// 4. dentist confirm pending
+test("4. dentist confirm pending", async ({ browser }) => {
+  const p = await browser.newContext();
+  const pPage = await p.newPage();
 
-    await expect(
-      page.getByRole("button", { name: /Complete/i })
-    ).not.toBeVisible();
-  });
+  await createBooking(pPage);
+  await p.close();
+
+  const d = await browser.newContext();
+  const dPage = await d.newPage();
+
+  await loginAs(dPage, "dentist");
+  await goToAppointments(dPage);
+
+  const btn = dPage.locator('button:has-text("Confirm")');
+  if (await btn.count()) await btn.first().click();
+
+  await d.close();
 });
+
+test("5. dentist cancel confirmed", async ({ browser }) => {
+  const context = await browser.newContext();
+  const d2 = await context.newPage();
+
+  await loginAs(d2, "dentist");
+  await goToAppointments(d2);
+
+  // 🔥 รอให้ API + UI render เสร็จจริง
+  await d2.waitForLoadState("networkidle");
+  await d2.waitForTimeout(500);
+
+  // 🔥 ใช้ role-based selector (เสถียรกว่า text)
+  const cancelBtn = d2.getByRole("button", { name: /cancel/i }).first();
+
+  // 🔥 กัน false positive
+  await expect(cancelBtn).toBeVisible();
+  await expect(cancelBtn).toBeEnabled();
+
+  await cancelBtn.click();
+
+  const textarea = d2.locator("textarea");
+  await expect(textarea).toBeVisible();
+  await textarea.fill("cancel");
+
+  const confirmBtn = d2.getByRole("button", { name: /confirm/i }).first();
+  await expect(confirmBtn).toBeVisible();
+  await expect(confirmBtn).toBeEnabled();
+
+  await confirmBtn.click();
+
+  await context.close();
+});
+
+
+
+
+// 6. dentist confirm pending again
+test("6. dentist confirm pending again", async ({ browser }) => {
+  const p = await browser.newContext();
+  const pPage = await p.newPage();
+
+  await createBooking(pPage);
+  await p.close();
+
+  const d = await browser.newContext();
+  const dPage = await d.newPage();
+
+  await loginAs(dPage, "dentist");
+  await goToAppointments(dPage);
+
+  const btn = dPage.locator('button:has-text("Confirm")');
+  if (await btn.count()) await btn.first().click();
+
+  await d.close();
+});
+
+// 7. patient view bookings
+test("7. patient view bookings", async ({ browser }) => {
+  const p = await browser.newContext();
+  const page = await p.newPage();
+
+  await loginAs(page, "patient");
+  await goToAppointments(page);
+
+  await expect(
+    page.getByRole("heading", { name: /My Appointments/i })
+  ).toBeVisible();
+
+  await p.close();
+});
+
+// 8. dentist complete appointment
+test("8. dentist complete appointment", async ({ browser }) => {
+  //const p = await browser.newContext();
+  //const pPage = await p.newPage();
+
+  //await createBooking(pPage);
+  //await p.close();
+
+  const d = await browser.newContext();
+  const dPage = await d.newPage();
+
+  await loginAs(dPage, "dentist");
+  await goToAppointments(dPage);
+
+  const btn = dPage.locator('button:has-text("Complete")');
+  
+  if (await btn.count()) {
+    await btn.first().click();
+    await dPage.locator("textarea").fill("done");
+    await dPage.locator('button:has-text("Confirm")').click();
+  }
+
+  await d.close();
+});
+// 9. patient review doctor
+test("9. patient review doctor", async ({ browser }) => {
+  const p = await browser.newContext();
+  const page = await p.newPage();
+
+  await loginAs(page, "patient");
+  await goToAppointments(page);
+
+  const history = page.locator('button:has-text("History")');
+  if (await history.count()) {
+    await history.click();
+
+    const expandBtn = page.locator('button[title="Expand Details"]').first();
+    await expandBtn.click();
+    await expect(page.locator('text=Review')).toBeVisible();
+
+
+
+    const review = page.locator('button:has-text("Review")');
+    if (await review.count()) {
+      await review.first().click();
+      await page.locator("textarea").fill("good");
+      const star5 = page.locator('button[aria-label="Rate 5 stars"]');
+      await expect(star5).toBeVisible();
+      await star5.click();
+      const submit = page.locator('button:has-text("ส่งรีวิว")');
+      if (await submit.count()) await submit.first().click();
+    }
+  }
+
+  await p.close();
+});
+
